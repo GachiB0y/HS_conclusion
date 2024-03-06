@@ -54,6 +54,18 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                 const SizedBox(
                   height: 30,
                 ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    if (state.data != null && state.data!.isNotEmpty) {
+                      print('SEND');
+                    }
+                  },
+                  icon: const Icon(Icons.send),
+                  label: const Text("Отправить"),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
                 const Text(
                   'Отксанируйте ШК для ввывода из оборота',
                 ),
@@ -93,6 +105,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                 const SizedBox(
                   height: 5,
                 ),
+                Text('Кол-во ШК: ${state.data!.length}'),
                 const Text('Список ШК на ввывод из оборота:'),
                 const SizedBox(
                   height: 5,
@@ -124,7 +137,7 @@ class ListBarcodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Expanded(
         child: ListView.builder(
-          reverse: true,
+          // reverse: true,
           itemCount: barcodes.length,
           itemBuilder: (context, index) => Column(
             children: [
