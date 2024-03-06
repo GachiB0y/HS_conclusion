@@ -1,14 +1,19 @@
+import 'package:dio/dio.dart';
+import 'package:hs_conclusion/src/core/components/rest_client/rest_client.dart';
+import 'package:hs_conclusion/src/core/components/rest_client/src/rest_client_dio.dart';
+import 'package:hs_conclusion/src/feature/conclusion/data/conclusion_api_client.dart';
+import 'package:hs_conclusion/src/feature/conclusion/data/conclusion_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sizzle_starter/src/core/utils/logger.dart';
-import 'package:sizzle_starter/src/feature/app/logic/tracking_manager.dart';
-import 'package:sizzle_starter/src/feature/initialization/model/dependencies.dart';
-import 'package:sizzle_starter/src/feature/initialization/model/environment_store.dart';
-import 'package:sizzle_starter/src/feature/settings/bloc/settings_bloc.dart';
-import 'package:sizzle_starter/src/feature/settings/data/locale_datasource.dart';
-import 'package:sizzle_starter/src/feature/settings/data/locale_repository.dart';
-import 'package:sizzle_starter/src/feature/settings/data/theme_datasource.dart';
-import 'package:sizzle_starter/src/feature/settings/data/theme_mode_codec.dart';
-import 'package:sizzle_starter/src/feature/settings/data/theme_repository.dart';
+import 'package:hs_conclusion/src/core/utils/logger.dart';
+import 'package:hs_conclusion/src/feature/app/logic/tracking_manager.dart';
+import 'package:hs_conclusion/src/feature/initialization/model/dependencies.dart';
+import 'package:hs_conclusion/src/feature/initialization/model/environment_store.dart';
+import 'package:hs_conclusion/src/feature/settings/bloc/settings_bloc.dart';
+import 'package:hs_conclusion/src/feature/settings/data/locale_datasource.dart';
+import 'package:hs_conclusion/src/feature/settings/data/locale_repository.dart';
+import 'package:hs_conclusion/src/feature/settings/data/theme_datasource.dart';
+import 'package:hs_conclusion/src/feature/settings/data/theme_mode_codec.dart';
+import 'package:hs_conclusion/src/feature/settings/data/theme_repository.dart';
 
 part 'initialization_factory.dart';
 
@@ -30,10 +35,12 @@ final class InitializationProcessor {
     final sharedPreferences = await SharedPreferences.getInstance();
 
     final settingsBloc = await _initSettingsBloc(sharedPreferences);
+    final conclusionRepository = _initConclusionRepository();
 
     return Dependencies(
       sharedPreferences: sharedPreferences,
       settingsBloc: settingsBloc,
+      conclusionRepository: conclusionRepository,
     );
   }
 
@@ -86,5 +93,20 @@ final class InitializationProcessor {
       msSpent: stopwatch.elapsedMilliseconds,
     );
     return result;
+  }
+
+  IConclusionBarcodeRepository _initConclusionRepository() {
+    final dio = Dio();
+    final RestClient restClient = RestClientDio(
+      baseUrl: 'https://swapi.dev/',
+      dio: dio,
+    );
+    final IConclusionBarcodeApiClient conclusionBarcodeApiClient =
+        ConclusionBarcodeApiClient(restClient);
+    final IConclusionBarcodeRepository conclusionBarcodeRepository =
+        ConclusionBarcodeRepository(
+      provider: conclusionBarcodeApiClient,
+    );
+    return conclusionBarcodeRepository;
   }
 }

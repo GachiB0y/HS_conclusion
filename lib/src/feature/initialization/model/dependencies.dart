@@ -1,5 +1,6 @@
+import 'package:hs_conclusion/src/feature/conclusion/data/conclusion_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sizzle_starter/src/feature/settings/bloc/settings_bloc.dart';
+import 'package:hs_conclusion/src/feature/settings/bloc/settings_bloc.dart';
 
 /// {@template dependencies}
 /// Dependencies container
@@ -9,6 +10,7 @@ base class Dependencies {
   const Dependencies({
     required this.sharedPreferences,
     required this.settingsBloc,
+    required this.conclusionRepository,
   });
 
   /// [SharedPreferences] instance, used to store Key-Value pairs.
@@ -16,6 +18,9 @@ base class Dependencies {
 
   /// [SettingsBloc] instance, used to manage theme and locale.
   final SettingsBloc settingsBloc;
+
+  /// [ConclusionBarcodeRepository] instance, used to repository barcode.
+  final IConclusionBarcodeRepository conclusionRepository;
 }
 
 /// {@template initialization_result}
