@@ -27,7 +27,9 @@ class ConclusionBarcodeBLoC
     on<ConclusionBarcodeEvent>(
       (event, emit) => event.map<Future<void>>(
         create: (event) => _create(event, emit),
-        sendBarcodeConclusion: (event) => _fetch(event, emit),
+        sendBarcodeConclusion: (event) => _sendBarcodesConclusion(event, emit),
+        fetchBarcodesConclusion: (event) =>
+            _fetchBarcodesConclusion(event, emit),
       ),
       transformer: bloc_concurrency.sequential(),
       //transformer: bloc_concurrency.restartable(),
@@ -43,21 +45,53 @@ class ConclusionBarcodeBLoC
     CreateConclusionBarcodeEvent event,
     Emitter<ConclusionBarcodeState> emit,
   ) async {
-    final List<String> newData = [...state.data!, event.barcode];
+    try {
+      emit(ConclusionBarcodeState.processing(data: state.data));
 
-    emit(ConclusionBarcodeState.idle(data: newData));
+      final List<String> newData = [...state.data!, event.barcode];
+      await _repository.saveBarcodesConclusion(event.barcode);
+
+      emit(ConclusionBarcodeState.successful(data: newData));
+      print('newData: $newData');
+    } on Object catch (err, stackTrace) {
+      //l.e('An error occurred in the ConclusionBarcodeBLoC: $err', stackTrace);
+      emit(ConclusionBarcodeState.error(data: state.data));
+      rethrow;
+    } finally {
+      emit(ConclusionBarcodeState.idle(data: state.data));
+    }
   }
 
-  /// Fetch event handler
-  Future<void> _fetch(
+  /// Fetch Barcodes Conclusion event handler
+  Future<void> _fetchBarcodesConclusion(
+    FetchBarcodesConclusionBarcodeEvent event,
+    Emitter<ConclusionBarcodeState> emit,
+  ) async {
+    try {
+      emit(ConclusionBarcodeState.processing(data: state.data));
+
+      final List<String> newData = await _repository.getBarcodesConclusion();
+
+      emit(ConclusionBarcodeState.successful(data: newData));
+    } on Object catch (err, stackTrace) {
+      //l.e('An error occurred in the ConclusionBarcodeBLoC: $err', stackTrace);
+      emit(ConclusionBarcodeState.error(data: state.data));
+      rethrow;
+    } finally {
+      emit(ConclusionBarcodeState.idle(data: state.data));
+    }
+  }
+
+  /// Send barcodes conclusion event handler
+  Future<void> _sendBarcodesConclusion(
     SendBarcodeConclusionConclusionBarcodeEvent event,
     Emitter<ConclusionBarcodeState> emit,
   ) async {
-    emit(ConclusionBarcodeState.idle(data: state.data));
     try {
       // emit(ConclusionBarcodeState.processing(data: state.data));
       // final newData = await _repository.fetch(event.barcode);
-      // emit(ConclusionBarcodeState.successful(data: newData));
+      await _repository.removeAllBarcodesConclusion();
+      emit(const ConclusionBarcodeState.successful(data: []));
     } on Object catch (err, stackTrace) {
       //l.e('An error occurred in the ConclusionBarcodeBLoC: $err', stackTrace);
       emit(ConclusionBarcodeState.error(data: state.data));

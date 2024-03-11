@@ -35,7 +35,7 @@ final class InitializationProcessor {
     final sharedPreferences = await SharedPreferences.getInstance();
 
     final settingsBloc = await _initSettingsBloc(sharedPreferences);
-    final conclusionRepository = _initConclusionRepository();
+    final conclusionRepository = _initConclusionRepository(sharedPreferences);
 
     return Dependencies(
       sharedPreferences: sharedPreferences,
@@ -95,7 +95,8 @@ final class InitializationProcessor {
     return result;
   }
 
-  IConclusionBarcodeRepository _initConclusionRepository() {
+  IConclusionBarcodeRepository _initConclusionRepository(
+      SharedPreferences sharedPreferences) {
     final dio = Dio();
     final RestClient restClient = RestClientDio(
       baseUrl: 'https://swapi.dev/',
@@ -106,6 +107,7 @@ final class InitializationProcessor {
     final IConclusionBarcodeRepository conclusionBarcodeRepository =
         ConclusionBarcodeRepository(
       provider: conclusionBarcodeApiClient,
+      sharedPreferences: sharedPreferences,
     );
     return conclusionBarcodeRepository;
   }

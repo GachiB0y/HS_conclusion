@@ -13,6 +13,10 @@ class ConclusionBarcodeEvent with _$ConclusionBarcodeEvent {
   const factory ConclusionBarcodeEvent.sendBarcodeConclusion() =
       SendBarcodeConclusionConclusionBarcodeEvent;
 
+  /// fetchBarcodesConclusion
+  const factory ConclusionBarcodeEvent.fetchBarcodesConclusion() =
+      FetchBarcodesConclusionBarcodeEvent;
+
   // /// Update
   // const factory ConclusionBarcodeEvent.update({required Item item}) =
   //     UpdateConclusionBarcodeEvent;
