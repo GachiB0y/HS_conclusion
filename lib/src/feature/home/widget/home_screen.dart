@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hs_conclusion/src/feature/conclusion/widget/conclusion_screen.dart';
-import 'package:hs_conclusion/src/feature/conclusion/widget/replacement_screen.dart';
+import 'package:hs_conclusion/src/feature/replacement/widget/replacement_screen.dart';
 
 /// {@template sample_page}
 /// SamplePage widget
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
             index: _tabInddex,
             children: const [
               ConclusionScreen(),
-              ReplacementScren(),
+              ReplacementScreen(),
             ],
           ),
         ),

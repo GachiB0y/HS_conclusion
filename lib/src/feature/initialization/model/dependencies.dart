@@ -1,4 +1,6 @@
+import 'package:hs_conclusion/src/core/components/rest_client/rest_client.dart';
 import 'package:hs_conclusion/src/feature/conclusion/data/conclusion_repository.dart';
+import 'package:hs_conclusion/src/feature/replacement/data/replacement_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hs_conclusion/src/feature/settings/bloc/settings_bloc.dart';
 
@@ -11,6 +13,8 @@ base class Dependencies {
     required this.sharedPreferences,
     required this.settingsBloc,
     required this.conclusionRepository,
+    required this.replacementRepository,
+    required this.restClient,
   });
 
   /// [SharedPreferences] instance, used to store Key-Value pairs.
@@ -21,6 +25,12 @@ base class Dependencies {
 
   /// [ConclusionBarcodeRepository] instance, used to repository barcode.
   final IConclusionBarcodeRepository conclusionRepository;
+
+  /// [ReplacementRepository] instance, used to repository barcode.
+  final IReplacementRepository replacementRepository;
+
+  /// [RestClient] instance, used to repository barcode.
+  final RestClient restClient;
 }
 
 /// {@template initialization_result}

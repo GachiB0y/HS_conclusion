@@ -3,6 +3,8 @@ import 'package:hs_conclusion/src/core/components/rest_client/rest_client.dart';
 import 'package:hs_conclusion/src/core/components/rest_client/src/rest_client_dio.dart';
 import 'package:hs_conclusion/src/feature/conclusion/data/conclusion_api_client.dart';
 import 'package:hs_conclusion/src/feature/conclusion/data/conclusion_repository.dart';
+import 'package:hs_conclusion/src/feature/replacement/data/replacement_api_client.dart';
+import 'package:hs_conclusion/src/feature/replacement/data/replacement_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hs_conclusion/src/core/utils/logger.dart';
 import 'package:hs_conclusion/src/feature/app/logic/tracking_manager.dart';
@@ -35,12 +37,22 @@ final class InitializationProcessor {
     final sharedPreferences = await SharedPreferences.getInstance();
 
     final settingsBloc = await _initSettingsBloc(sharedPreferences);
-    final conclusionRepository = _initConclusionRepository(sharedPreferences);
+    final dio = Dio();
+    final RestClient restClient = RestClientDio(
+      baseUrl: 'https://swapi.dev/',
+      dio: dio,
+    );
+    final conclusionRepository =
+        _initConclusionRepository(sharedPreferences, restClient);
+    final replacementRepository =
+        _initReplacementRepository(sharedPreferences, restClient);
 
     return Dependencies(
       sharedPreferences: sharedPreferences,
       settingsBloc: settingsBloc,
       conclusionRepository: conclusionRepository,
+      replacementRepository: replacementRepository,
+      restClient: restClient,
     );
   }
 
@@ -96,12 +108,9 @@ final class InitializationProcessor {
   }
 
   IConclusionBarcodeRepository _initConclusionRepository(
-      SharedPreferences sharedPreferences) {
-    final dio = Dio();
-    final RestClient restClient = RestClientDio(
-      baseUrl: 'https://swapi.dev/',
-      dio: dio,
-    );
+    SharedPreferences sharedPreferences,
+    RestClient restClient,
+  ) {
     final IConclusionBarcodeApiClient conclusionBarcodeApiClient =
         ConclusionBarcodeApiClient(restClient);
     final IConclusionBarcodeRepository conclusionBarcodeRepository =
@@ -110,5 +119,18 @@ final class InitializationProcessor {
       sharedPreferences: sharedPreferences,
     );
     return conclusionBarcodeRepository;
+  }
+
+  IReplacementRepository _initReplacementRepository(
+    SharedPreferences sharedPreferences,
+    RestClient restClient,
+  ) {
+    final IReplacementApiClient replacementApiClient =
+        ReplacmentBarcodeApiClient(restClient);
+    final IReplacementRepository replacementRepository = ReplacementRepository(
+      provider: replacementApiClient,
+      sharedPreferences: sharedPreferences,
+    );
+    return replacementRepository;
   }
 }

@@ -56,7 +56,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                   height: 30,
                 ),
                 const Text(
-                  'Отсканируйте ШК для ввывода из оборота',
+                  'Отсканируйте ШК',
                 ),
                 TextFormField(
                   controller: _textController,
