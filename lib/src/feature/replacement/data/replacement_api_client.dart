@@ -1,5 +1,5 @@
 import 'package:hs_conclusion/src/core/components/rest_client/rest_client.dart';
-import 'package:hs_conclusion/src/feature/replacement/bloc/replacement_bloc.dart';
+import 'package:hs_conclusion/src/feature/replacement/bloc/replacement_bloc/replacement_bloc.dart';
 import 'package:hs_conclusion/src/feature/replacement/model/pallet_model.dart';
 
 abstract interface class IReplacementApiClient {
@@ -54,7 +54,7 @@ class ReplacmentBarcodeApiClient implements IReplacementApiClient {
     // );
     if (barcode == '043456789123456784') {
       final data = {
-        "barcode": 043456789123456784,
+        "barcode": "043456789123456784",
         "items": [
           {"barcode": "item1"},
           {"barcode": "item2"},
