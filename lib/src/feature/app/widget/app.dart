@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hs_conclusion/src/feature/replacement/widget/replacment_scope.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:hs_conclusion/src/feature/app/widget/material_context.dart';
 import 'package:hs_conclusion/src/feature/initialization/logic/initialization_processor.dart';
@@ -25,9 +26,11 @@ class App extends StatelessWidget {
         bundle: SentryAssetBundle(),
         child: DependenciesScope(
           dependencies: result.dependencies,
-          child: SettingsScope(
-            settingsBloc: result.dependencies.settingsBloc,
-            child: const MaterialContext(),
+          child: ReplacmentScope(
+            child: SettingsScope(
+              settingsBloc: result.dependencies.settingsBloc,
+              child: const MaterialContext(),
+            ),
           ),
         ),
       );

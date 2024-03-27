@@ -4,6 +4,7 @@ import 'package:hs_conclusion/src/feature/initialization/widget/dependencies_sco
 import 'package:hs_conclusion/src/feature/replacement/bloc/replacement_bloc/replacement_bloc.dart';
 import 'package:hs_conclusion/src/feature/replacement/bloc/replacement_view_model_bloc/replacement_view_model_bloc.dart';
 import 'package:hs_conclusion/src/feature/replacement/model/pallet_model.dart';
+import 'package:hs_conclusion/src/feature/replacement/widget/replacment_scope.dart';
 
 class ReplacementScreen extends StatefulWidget {
   const ReplacementScreen({super.key});
@@ -62,13 +63,7 @@ class _ReplacementScreenState extends State<ReplacementScreen> {
                     ); // Установить фокус на TextFormField
                     return 'Значение обязательно';
                   }
-                  // if (!value.startsWith('99')) {
-                  //   textController.clear();
-                  //   FocusScope.of(context).requestFocus(
-                  //     focusNodeChangeBarcodeParty,
-                  //   ); // Установить фокус на TextFormField
-                  //   return 'ШК должен начинаться с 99';
-                  // }
+
                   return null;
                 },
               ),
@@ -140,6 +135,18 @@ class _ReplacementScreenState extends State<ReplacementScreen> {
                       focusNode,
                     ); // Установить фокус на TextFormField
                     return 'ШК должен начинаться с 0';
+                  }
+                  final isDuplicateBarcode =
+                      ReplacmentScope.of(context).state.checkDuplicateBarcode(
+                            replacementBloc.state.data!.boxes,
+                            value,
+                          );
+                  if (isDuplicateBarcode) {
+                    textController.clear();
+                    FocusScope.of(context).requestFocus(
+                      focusNode,
+                    ); // Установить фокус на TextFormField
+                    return 'ШК дублируется в Паллете';
                   }
                   return null;
                 },
@@ -280,6 +287,19 @@ class _ReplacementScreenState extends State<ReplacementScreen> {
                         ); // Установить фокус на TextFormField
                         return 'Значение обязательно';
                       }
+                      final isDuplicateBarcode = ReplacmentScope.of(context)
+                          .state
+                          .checkDuplicateBarcode(
+                            replacementBloc.state.data!.boxes,
+                            value,
+                          );
+                      if (isDuplicateBarcode) {
+                        textController.clear();
+                        FocusScope.of(context).requestFocus(
+                          focusNode,
+                        ); // Установить фокус на TextFormField
+                        return 'ШК дублируется в Паллете';
+                      }
 
                       return null;
                     },
@@ -382,13 +402,19 @@ class _ListBarcodeWidgetState extends State<ListBarcodeWidget> {
                         ); // Установить фокус на TextFormField
                         return 'Значение обязательно';
                       }
-                      // if (!value.startsWith('99')) {
-                      //   textController.clear();
-                      //   FocusScope.of(context).requestFocus(
-                      //     focusNodeChangeBarcodeParty,
-                      //   ); // Установить фокус на TextFormField
-                      //   return 'ШК должен начинаться с 99';
-                      // }
+                      final isDuplicateBarcode = ReplacmentScope.of(context)
+                          .state
+                          .checkDuplicateBarcode(
+                            widget.pallet.boxes,
+                            value,
+                          );
+                      if (isDuplicateBarcode) {
+                        textController.clear();
+                        FocusScope.of(context).requestFocus(
+                          focusNode,
+                        ); // Установить фокус на TextFormField
+                        return 'ШК дублируется в Паллете';
+                      }
                       return null;
                     },
                     onFieldSubmitted: (value) {
