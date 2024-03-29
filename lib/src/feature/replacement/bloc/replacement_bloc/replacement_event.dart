@@ -23,4 +23,10 @@ class ReplacementEvent with _$ReplacementEvent {
   const factory ReplacementEvent.delete({
     required int indexBox,
   }) = DeleteReplacementEvent;
+
+  /// Get Cash
+  const factory ReplacementEvent.getCash() = GetCashReplacementEvent;
+
+  /// Send Pallet
+  const factory ReplacementEvent.sendPallet() = SendPalletReplacementEvent;
 }

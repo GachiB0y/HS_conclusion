@@ -1,3 +1,5 @@
+// ignore_for_file: unused_catch_stack
+
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart' as bloc_concurrency;
@@ -30,6 +32,8 @@ class ReplacementBLoC extends Bloc<ReplacementEvent, ReplacementState>
         update: (event) => _update(event, emit),
         delete: (event) => _delete(event, emit),
         create: (event) => _create(event, emit),
+        getCash: (event) => _getCash(event, emit),
+        sendPallet: (event) => _sendPallet(event, emit),
       ),
       transformer: bloc_concurrency.sequential(),
       //transformer: bloc_concurrency.restartable(),
@@ -48,6 +52,7 @@ class ReplacementBLoC extends Bloc<ReplacementEvent, ReplacementState>
     try {
       emit(ReplacementState.processing(data: state.data));
       final newData = await _repository.fetch(barcode: event.barcode);
+      await _repository.savePallet(newData);
       emit(ReplacementState.successful(data: newData));
     } on Object catch (err, stackTrace) {
       //l.e('An error occurred in the ReplacementBLoC: $err', stackTrace);
@@ -74,6 +79,7 @@ class ReplacementBLoC extends Bloc<ReplacementEvent, ReplacementState>
       );
 
       final newData = oldData.copyWith(boxes: oldBoxes);
+      await _repository.savePallet(newData);
       emit(ReplacementState.successful(data: newData));
     } on Object catch (err, stackTrace) {
       //l.e('An error occurred in the ReplacementBLoC: $err', stackTrace);
@@ -96,6 +102,7 @@ class ReplacementBLoC extends Bloc<ReplacementEvent, ReplacementState>
       oldBoxes.remove(oldBoxes[event.indexBox]);
 
       final newData = oldData.copyWith(boxes: oldBoxes);
+      await _repository.savePallet(newData);
       emit(ReplacementState.successful(data: newData));
     } on Object catch (err, stackTrace) {
       //l.e('An error occurred in the ReplacementBLoC: $err', stackTrace);
@@ -121,7 +128,46 @@ class ReplacementBLoC extends Bloc<ReplacementEvent, ReplacementState>
       oldBoxes.add(box);
 
       final newData = oldData.copyWith(boxes: oldBoxes);
+      await _repository.savePallet(newData);
       emit(ReplacementState.successful(data: newData));
+    } on Object catch (err, stackTrace) {
+      //l.e('An error occurred in the ReplacementBLoC: $err', stackTrace);
+      emit(ReplacementState.error(data: state.data));
+      rethrow;
+    } finally {
+      emit(ReplacementState.idle(data: state.data));
+    }
+  }
+
+  /// Get Cash event handler
+  Future<void> _getCash(
+    GetCashReplacementEvent event,
+    Emitter<ReplacementState> emit,
+  ) async {
+    try {
+      emit(ReplacementState.processing(data: state.data));
+      final pallet = await _repository.getPallets();
+
+      emit(ReplacementState.successful(data: pallet));
+    } on Object catch (err, stackTrace) {
+      //l.e('An error occurred in the ReplacementBLoC: $err', stackTrace);
+      emit(ReplacementState.error(data: state.data));
+      rethrow;
+    } finally {
+      emit(ReplacementState.idle(data: state.data));
+    }
+  }
+
+  /// Send Pallet event handler
+  Future<void> _sendPallet(
+    SendPalletReplacementEvent event,
+    Emitter<ReplacementState> emit,
+  ) async {
+    try {
+      emit(ReplacementState.processing(data: state.data));
+      await _repository.removeAllPallets();
+
+      emit(const ReplacementState.successful(data: null));
     } on Object catch (err, stackTrace) {
       //l.e('An error occurred in the ReplacementBLoC: $err', stackTrace);
       emit(ReplacementState.error(data: state.data));

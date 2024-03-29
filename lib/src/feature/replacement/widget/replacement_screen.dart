@@ -24,7 +24,7 @@ class _ReplacementScreenState extends State<ReplacementScreen> {
 
     replacementBloc = ReplacementBLoC(
       repository: DependenciesScope.of(context).replacementRepository,
-    );
+    )..add(const ReplacementEvent.getCash());
     viewModelBLoC = ReplacementViewModelBLoC(
       repository: DependenciesScope.of(context).replacementRepository,
     );
@@ -179,8 +179,10 @@ class _ReplacementScreenState extends State<ReplacementScreen> {
               state.data!.isShowDialogAddBarcodesItems == true) {
             showDialogFillBox(
               context,
-              replacementBloc.state.data!.boxes.length - 1,
+              replacementBloc.state.data!.boxes.length,
             );
+
+            //TODO Неправильный индекс!
           }
         },
         child: BlocBuilder<ReplacementBLoC, ReplacementState>(
@@ -193,12 +195,10 @@ class _ReplacementScreenState extends State<ReplacementScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
-                    // if (state.data != null && state.data!.isNotEmpty) {
-                    //   conclusionBarcodeBLoC.add(
-                    //     const ConclusionBarcodeEvent.sendBarcodeConclusion(),
-                    //   );
-                    //   print('SEND');
-                    // }
+                    if (replacementBloc.state.data == null) {
+                      return;
+                    }
+                    replacementBloc.add(const ReplacementEvent.sendPallet());
                   },
                   icon: const Icon(Icons.send),
                   label: const Text("Сохранить"),

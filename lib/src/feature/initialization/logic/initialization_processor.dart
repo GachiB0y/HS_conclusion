@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:hs_conclusion/src/core/components/database/src/app_database.dart';
 import 'package:hs_conclusion/src/core/components/rest_client/rest_client.dart';
 import 'package:hs_conclusion/src/core/components/rest_client/src/rest_client_dio.dart';
 import 'package:hs_conclusion/src/feature/conclusion/data/conclusion_api_client.dart';
@@ -42,10 +43,11 @@ final class InitializationProcessor {
       baseUrl: 'https://swapi.dev/',
       dio: dio,
     );
+    final database = AppDatabase();
     final conclusionRepository =
         _initConclusionRepository(sharedPreferences, restClient);
     final replacementRepository =
-        _initReplacementRepository(sharedPreferences, restClient);
+        _initReplacementRepository(sharedPreferences, restClient, database);
 
     return Dependencies(
       sharedPreferences: sharedPreferences,
@@ -124,12 +126,14 @@ final class InitializationProcessor {
   IReplacementRepository _initReplacementRepository(
     SharedPreferences sharedPreferences,
     RestClient restClient,
+    AppDatabase database,
   ) {
     final IReplacementApiClient replacementApiClient =
         ReplacmentBarcodeApiClient(restClient);
     final IReplacementRepository replacementRepository = ReplacementRepository(
       provider: replacementApiClient,
       sharedPreferences: sharedPreferences,
+      database: database,
     );
     return replacementRepository;
   }

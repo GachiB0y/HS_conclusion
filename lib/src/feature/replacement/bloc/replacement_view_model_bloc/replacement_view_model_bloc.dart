@@ -60,6 +60,12 @@ class ReplacementViewModelBLoC
   final IReplacementRepository _repository;
   StreamSubscription<ReplacementViewModel>? _stateSubscription;
 
+  @override
+  Future<void> close() async {
+    await _stateSubscription?.cancel();
+    return super.close();
+  }
+
   /// Change event handler
   Future<void> _change(
     ChangeIsShowDialogAddBarcodesItemsReplacementViewModelEvent event,
